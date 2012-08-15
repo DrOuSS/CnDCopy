@@ -45,15 +45,21 @@
   <ItemGroup>
     <Compile Include="Copier.cs" />
     <Compile Include="Credentials.cs" />
-    <Compile Include="LocationManagers\Ftp\FtpLocation.cs" />
     <Compile Include="ILocation.cs" />
-    <Compile Include="LocationManagers\CopyRequestState.cs" />
-    <Compile Include="LocationManagers\Ftp\FTPLocationManager.cs" />
-    <Compile Include="LocationManagers\Ftp\FtpRequestState.cs" />
-    <Compile Include="LocationManagers\ILocationManager.cs" />
+    <Compile Include="ILocationFactory.cs" />
+    <Compile Include="LocationFactory.cs" />
+    <Compile Include="LocationManagers\Ftp\FtpLocation.cs" />
+    <Compile Include="LocationBase.cs" />
+    <Compile Include="LocationManagers\DownloadRequest.cs" />
+    <Compile Include="LocationManagers\Ftp\FtpManager.cs" />
+    <Compile Include="LocationManagers\Ftp\FtpPushRequest.cs" />
+    <Compile Include="LocationManagers\PushRequest.cs" />
+    <Compile Include="LocationManagers\Ftp\FtpDownloadRequest.cs" />
+    <Compile Include="LocationManagers\LocationManagerBase.cs" />
     <Compile Include="LocationManagers\UNC\UncLocation.cs" />
-    <Compile Include="LocationManagers\UNC\UncRequestState.cs" />
-    <Compile Include="LocationManagers\UNC\UNCLocationManager.cs" />
+    <Compile Include="LocationManagers\UNC\UncPushRequest.cs" />
+    <Compile Include="LocationManagers\UNC\UncDownloadRequest.cs" />
+    <Compile Include="LocationManagers\UNC\UncManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceMode.cs" />
   </ItemGroup>

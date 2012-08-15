@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -33,7 +34,7 @@ namespace FtpWebRequestTests
         [Test]
         public void GetFileLength2()
         {
-            var locationManager = new FtpLocationManager();
+            var locationManager = new FtpManager(null, ReplaceMode.Ignore);
             var request = locationManager.CreateRequest(new Uri("ftp://127.0.0.1/masseffect3.pdf"),
                                                         WebRequestMethods.Ftp.GetFileSize,
                                                         new Credentials { Username = "test", Password = null });
@@ -47,17 +48,18 @@ namespace FtpWebRequestTests
         public void GetFileDownload()
         {
             _mre = new ManualResetEventSlim(false);
-            var locationManager = new FtpLocationManager();
             var location = new FtpLocation
                                {
                                    Credentials = new Credentials{Username = "test"},
                                    ItemUri = new Uri("ftp://127.0.0.1/masseffect3.pdf"),
                                };
+            var locationManager = new FtpManager(location, ReplaceMode.Ignore);
             int bytesRead = 0;
             using (var sw = new BinaryWriter(File.Create(@"c:\test.pdf")))
             {
-                locationManager.BeginRetreiveFile(location, buffer =>
+                locationManager.BeginRetreiveFile(buffer =>
                                                                 {
+                                                                    Debug.Assert(sw != null, "sw != null");
                                                                     sw.Write(buffer);
                                                                     bytesRead += buffer.Length;
                                                                 }, () => _mre.Set());

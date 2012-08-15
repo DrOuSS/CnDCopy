@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtpWebRequestTests", "FtpWe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UncRequestTests", "UncRequestTests\UncRequestTests.csproj", "{99A332CB-778A-4B7D-A5E1-44E94DEE1FEC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CopierTests", "CopierTests\CopierTests.csproj", "{FAD51EF7-1C36-4A1B-9862-958320861249}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{99A332CB-778A-4B7D-A5E1-44E94DEE1FEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99A332CB-778A-4B7D-A5E1-44E94DEE1FEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99A332CB-778A-4B7D-A5E1-44E94DEE1FEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAD51EF7-1C36-4A1B-9862-958320861249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAD51EF7-1C36-4A1B-9862-958320861249}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAD51EF7-1C36-4A1B-9862-958320861249}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAD51EF7-1C36-4A1B-9862-958320861249}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -37,5 +43,6 @@ Global
 		{923E2D11-6131-4C95-8683-A47AB2D8A546} = {8D145027-9D48-4AD9-ACA0-E6B3489F97B7}
 		{E77F8125-CCB3-4B44-AA8C-9B841D997E33} = {523653F2-C32A-4130-9C15-27BE6D3C28EC}
 		{99A332CB-778A-4B7D-A5E1-44E94DEE1FEC} = {523653F2-C32A-4130-9C15-27BE6D3C28EC}
+		{FAD51EF7-1C36-4A1B-9862-958320861249} = {523653F2-C32A-4130-9C15-27BE6D3C28EC}
 	EndGlobalSection
 EndGlobal

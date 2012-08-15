@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using CnDCopy.Kernel;
@@ -16,17 +17,18 @@ namespace UncRequestTests
         public void GetFileDownload()
         {
             _mre = new ManualResetEventSlim(false);
-            var locationManager = new UncLocationManager();
             var location = new UncLocation
             {
                 Credentials = new Credentials { Username = "test" },
                 ItemUri = new Uri(@"c:\test.pdf"),
             };
+            var locationManager = new UncManager(location, ReplaceMode.Ignore);
             int bytesRead = 0;
             using (var sw = new BinaryWriter(File.Create(@"c:\test2.pdf")))
             {
-                locationManager.BeginRetreiveFile(location, buffer =>
+                locationManager.BeginRetreiveFile(buffer =>
                                                                 {
+                                                                    Debug.Assert(sw != null, "sw != null");
                                                                     sw.Write(buffer);
                                                                     bytesRead += buffer.Length;
                                                                 }, () => _mre.Set());
