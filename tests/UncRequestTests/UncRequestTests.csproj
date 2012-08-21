@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E77F8125-CCB3-4B44-AA8C-9B841D997E33}</ProjectGuid>
+    <ProjectGuid>{99A332CB-778A-4B7D-A5E1-44E94DEE1FEC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FtpWebRequestTests</RootNamespace>
-    <AssemblyName>FtpWebRequestTests</AssemblyName>
+    <RootNamespace>UncRequestTests</RootNamespace>
+    <AssemblyName>UncRequestTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -41,11 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FtpWebRequestTest.cs" />
+    <Compile Include="UncRequestTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\CnDCopy.Kernel\CnDCopy.Kernel.csproj">
+    <ProjectReference Include="..\..\src\CnDCopy.Kernel\CnDCopy.Kernel.csproj">
       <Project>{923E2D11-6131-4C95-8683-A47AB2D8A546}</Project>
       <Name>CnDCopy.Kernel</Name>
     </ProjectReference>

@@ -46,7 +46,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\CnDCopy.Kernel\CnDCopy.Kernel.csproj">
+    <ProjectReference Include="..\..\src\CnDCopy.Kernel\CnDCopy.Kernel.csproj">
       <Project>{923E2D11-6131-4C95-8683-A47AB2D8A546}</Project>
       <Name>CnDCopy.Kernel</Name>
     </ProjectReference>
