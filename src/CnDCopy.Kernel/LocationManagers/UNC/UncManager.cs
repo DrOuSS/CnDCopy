@@ -9,7 +9,10 @@ namespace CnDCopy.Kernel.LocationManagers.UNC
         public UncManager(UncLocation location, ReplaceMode replaceMode) : base(location, replaceMode)
         {
             BufferSize = 2048;
-            _locationInfo = new FileInfo(location.ItemUri.LocalPath);
+            if (location.ItemUri.IsAbsoluteUri)
+                _locationInfo = new FileInfo(location.ItemUri.AbsolutePath);
+            else
+                _locationInfo = new FileInfo(location.ItemUri.ToString());
         }
 
         private readonly FileInfo _locationInfo;
@@ -25,10 +28,11 @@ namespace CnDCopy.Kernel.LocationManagers.UNC
             uncRequest.Buffering += bufferCallback;
             uncRequest.CopyDone += copyDone;
 
-            var fi = new FileInfo(Location.ItemUri.LocalPath);
+            var filePath = Location.ItemUri.IsAbsoluteUri ? Location.ItemUri.LocalPath : Location.ItemUri.ToString();
+            var fi = new FileInfo(filePath);
             uncRequest.FileSize = fi.Length;
 
-            using (var stream = File.Open(Location.ItemUri.LocalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 int bytesCount;
                 while((bytesCount = stream.Read(uncRequest.Buffer, 0, BufferSize)) > 0)
@@ -52,8 +56,9 @@ namespace CnDCopy.Kernel.LocationManagers.UNC
 
         public override PushRequest BeginPushFile()
         {
+            var filePath = Location.ItemUri.IsAbsoluteUri ? Location.ItemUri.LocalPath : Location.ItemUri.ToString();
             var pushRequest = new UncPushRequest
-                                  {OutputStream = File.Open(Location.ItemUri.LocalPath, GetFileMode())};
+                                  {OutputStream = File.Open(filePath, GetFileMode())};
 
             return pushRequest;
         }

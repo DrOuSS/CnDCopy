@@ -8,7 +8,7 @@ namespace CnDCopy.Kernel
     {
         public LocationManagerBase GetManager(ILocation location, ReplaceMode replaceMode)
         {
-            if (location.ItemUri.Scheme.StartsWith("ftp"))
+            if (location.ItemUri.IsAbsoluteUri && location.ItemUri.Scheme.StartsWith("ftp"))
                 return new FtpManager((FtpLocation)location, replaceMode);
 
             return new UncManager((UncLocation)location, replaceMode);
