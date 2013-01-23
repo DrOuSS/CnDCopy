@@ -1,7 +1,6 @@
 using System;
-using CnDCopy.Kernel.LocationManagers;
 
-namespace CnDCopy.Kernel
+namespace CnDCopy.Kernel.LocationManagers
 {
 	public interface IStreamableLocationManager : ILocationManagerBase
 	{

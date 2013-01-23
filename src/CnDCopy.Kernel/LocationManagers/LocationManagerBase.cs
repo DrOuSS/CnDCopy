@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CnDCopy.Kernel.LocationManagers
+﻿namespace CnDCopy.Kernel.LocationManagers
 {
 	public abstract class LocationManagerBase : ILocationManagerBase
 	{

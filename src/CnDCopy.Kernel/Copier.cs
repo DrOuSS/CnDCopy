@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using CnDCopy.Kernel.LocationManagers;
 
 namespace CnDCopy.Kernel
 {

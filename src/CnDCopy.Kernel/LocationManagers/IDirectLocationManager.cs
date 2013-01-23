@@ -1,5 +1,5 @@
 
-namespace CnDCopy.Kernel
+namespace CnDCopy.Kernel.LocationManagers
 {
 	public interface IDirectLocationManager : ILocationManagerBase
 	{
