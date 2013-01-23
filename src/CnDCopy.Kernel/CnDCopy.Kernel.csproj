@@ -10,13 +10,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CnDCopy.Kernel</RootNamespace>
     <AssemblyName>CnDCopy.Kernel</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -24,7 +23,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -47,13 +46,11 @@
     <Compile Include="Credentials.cs" />
     <Compile Include="ILocation.cs" />
     <Compile Include="ILocationFactory.cs" />
-    <Compile Include="LocationFactory.cs" />
     <Compile Include="LocationManagers\Ftp\FtpLocation.cs" />
     <Compile Include="LocationBase.cs" />
     <Compile Include="LocationManagers\DownloadRequest.cs" />
     <Compile Include="LocationManagers\Ftp\FtpManager.cs" />
     <Compile Include="LocationManagers\Ftp\FtpPushRequest.cs" />
-    <Compile Include="LocationManagers\PushRequest.cs" />
     <Compile Include="LocationManagers\Ftp\FtpDownloadRequest.cs" />
     <Compile Include="LocationManagers\LocationManagerBase.cs" />
     <Compile Include="LocationManagers\UNC\UncLocation.cs" />
@@ -62,6 +59,7 @@
     <Compile Include="LocationManagers\UNC\UncManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceMode.cs" />
+    <Compile Include="LocationManagers\PushRequest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

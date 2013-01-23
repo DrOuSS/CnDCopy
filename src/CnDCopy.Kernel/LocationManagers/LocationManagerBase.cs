@@ -2,26 +2,31 @@
 
 namespace CnDCopy.Kernel.LocationManagers
 {
-    public abstract class LocationManagerBase
-    {
-        internal LocationManagerBase(ILocation location, ReplaceMode replaceMode)
-        {
-            Location = location;
-            ReplaceMode = replaceMode;
-        }
+	public abstract class LocationManagerBase
+	{
+		internal LocationManagerBase (Credentials credentials, ReplaceMode defaultReplaceMode)
+		{
+			Credentials = credentials;
+			DefaultReplaceMode = defaultReplaceMode;
+		}
 
-        public ReplaceMode ReplaceMode { get; set; }
-        public ILocation Location { get; private set; }
+		protected ReplaceMode DefaultReplaceMode { get; set; }
+		protected Credentials Credentials { get; private set; }
         
-        public abstract long GetSize();
+		public abstract long GetSize (ILocation location);
 
-        public abstract void BeginRetreiveFile(Action<byte[]> bufferCallback, Action copyDone);
+		public abstract void BeginRetreive (ILocation sourceLocation, Action<byte[]> bufferCallback, Action copyDone);
 
-        public abstract PushRequest BeginPushFile();
+		public PushRequest BeginPush (ILocation destinationLocation)
+		{
+			return BeginPush (destinationLocation, DefaultReplaceMode); 		
+		}
+	
+		public abstract PushRequest BeginPush (ILocation destinationLocation, ReplaceMode replaceMode);
 
-        public abstract void Delete();
+		public abstract void Delete (ILocation location);
 
-        public abstract bool Exists();
-    }
+		public abstract bool Exists (ILocation location);
+	}
 
 }

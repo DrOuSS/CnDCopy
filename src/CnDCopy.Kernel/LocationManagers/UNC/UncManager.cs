@@ -1,107 +1,114 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 
 namespace CnDCopy.Kernel.LocationManagers.UNC
 {
-    public class UncManager : LocationManagerBase
-    {
-        public UncManager(UncLocation location, ReplaceMode replaceMode) : base(location, replaceMode)
-        {
-            BufferSize = 2048;
-            if (location.ItemUri.IsAbsoluteUri)
-                _locationInfo = new FileInfo(location.ItemUri.AbsolutePath);
-            else
-                _locationInfo = new FileInfo(location.ItemUri.ToString());
-        }
+	public class UncManager : LocationManagerBase
+	{
+		public UncManager (Credentials credentials, ReplaceMode replaceMode) : base(credentials, replaceMode)
+		{
+			BufferSize = 2048;
+		}
+		
+		/// <summary>
+		/// Default value is 2048 bytes
+		/// </summary>
+		public int BufferSize { get; set; }
 
-        private readonly FileInfo _locationInfo;
+		#region implemented abstract members of LocationManagerBase
+		public override void BeginRetreive (ILocation sourceLocation, Action<byte[]> bufferCallback, Action copyDone)
+		{
+			var uncRequest = new UncDownloadRequest (BufferSize);
+			uncRequest.Buffering += bufferCallback;
+			uncRequest.CopyDone += copyDone;
+			
+			var filePath = GetPathFromLocation (sourceLocation);
+			var fi = new FileInfo (filePath);
+			uncRequest.FileSize = fi.Length;
+			
+			using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+				int bytesCount;
+				while ((bytesCount = stream.Read(uncRequest.Buffer, 0, BufferSize)) > 0) {
+					uncRequest.BytesRead += bytesCount;
+					if (bytesCount == BufferSize)
+						uncRequest.FireBuffering (uncRequest.Buffer);
+					else {
+						var lastBuffer = new byte[bytesCount];
+						Array.Copy (uncRequest.Buffer, lastBuffer, bytesCount);
+						uncRequest.FireBuffering (lastBuffer);
+						Array.Clear (lastBuffer, 0, bytesCount);
+					}
+				}
+				
+				uncRequest.FireCopyDone ();
+				Trace.TraceInformation (uncRequest.BytesRead + " bytes read on " + uncRequest.FileSize + " bytes.");
+			}
+		}
 
-        /// <summary>
-        /// Default value is 2048 bytes
-        /// </summary>
-        public int BufferSize { get; set; }
+		public override PushRequest BeginPush (ILocation destinationLocation, ReplaceMode replaceMode)
+		{
+			var filePath = GetPathFromLocation (destinationLocation);
+			var pushRequest = new UncPushRequest
+			{OutputStream = File.Open(filePath, GetFileMode())};
+			
+			return pushRequest;
+		}
+		public override void Delete (ILocation location)
+		{
+			if (location.IsFolder)
+				Directory.Delete (GetPathFromLocation (location));
+			else
+				File.Delete (GetPathFromLocation (location));
+		}
+		public override bool Exists (ILocation location)
+		{
+			if (location.IsFolder)
+				return Directory.Exists (GetPathFromLocation (location));
+				
+			return File.Exists (GetPathFromLocation (location));
+		}
+		public override long GetSize (ILocation location)
+		{
+			if (location.IsFolder)
+				throw new NotImplementedException ();
 
-        public override void BeginRetreiveFile(Action<byte[]> bufferCallback, Action copyDone)
-        {
-            var uncRequest = new UncDownloadRequest(BufferSize);
-            uncRequest.Buffering += bufferCallback;
-            uncRequest.CopyDone += copyDone;
+			var fi = new FileInfo (GetPathFromLocation (location));
+			return fi.Length;
+		}
+		#endregion
 
-            var filePath = Location.ItemUri.IsAbsoluteUri ? Location.ItemUri.LocalPath : Location.ItemUri.ToString();
-            var fi = new FileInfo(filePath);
-            uncRequest.FileSize = fi.Length;
 
-            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                int bytesCount;
-                while((bytesCount = stream.Read(uncRequest.Buffer, 0, BufferSize)) > 0)
-                {
-                    uncRequest.BytesRead += bytesCount;
-                    if (bytesCount == BufferSize)
-                        uncRequest.FireBuffering(uncRequest.Buffer);
-                    else
-                    {
-                        var lastBuffer = new byte[bytesCount];
-                        Array.Copy(uncRequest.Buffer, lastBuffer, bytesCount);
-                        uncRequest.FireBuffering(lastBuffer);
-                        Array.Clear(lastBuffer, 0, bytesCount);
-                    }
-                }
+		private FileMode GetFileMode ()
+		{
+			if (DefaultReplaceMode == ReplaceMode.Ignore)
+				return FileMode.CreateNew;
 
-                uncRequest.FireCopyDone();
-                Trace.TraceInformation(uncRequest.BytesRead + " bytes read on " + uncRequest.FileSize + " bytes.");
-            }
-        }
+			if (DefaultReplaceMode == ReplaceMode.Resume)
+				return FileMode.Append;
 
-        public override PushRequest BeginPushFile()
-        {
-            var filePath = Location.ItemUri.IsAbsoluteUri ? Location.ItemUri.LocalPath : Location.ItemUri.ToString();
-            var pushRequest = new UncPushRequest
-                                  {OutputStream = File.Open(filePath, GetFileMode())};
+			if ((DefaultReplaceMode & ReplaceMode.ReplaceIfDifferentSize) == ReplaceMode.ReplaceIfDifferentSize)
+				return FileMode.Create;
 
-            return pushRequest;
-        }
+			if (DefaultReplaceMode == ReplaceMode.Replace)
+				return FileMode.Create;
 
-        private FileMode GetFileMode()
-        {
-            if (ReplaceMode == ReplaceMode.Ignore)
-                return FileMode.CreateNew;
+			if (DefaultReplaceMode == ReplaceMode.Rename)
+				return FileMode.CreateNew;
 
-            if(ReplaceMode == ReplaceMode.Resume)
-                return FileMode.Append;
+			if (DefaultReplaceMode == ReplaceMode.UserAsking)
+				throw new NotImplementedException ("UserAsking is not not a valid ReplaceMode.");
 
-            if ((ReplaceMode & ReplaceMode.ReplaceIfDifferentSize) == ReplaceMode.ReplaceIfDifferentSize)
-                return FileMode.Create;
+			if ((DefaultReplaceMode & ReplaceMode.ReplaceIfNewer) == ReplaceMode.ReplaceIfNewer)
+				return FileMode.Create;
 
-            if (ReplaceMode == ReplaceMode.Replace)
-                return FileMode.Create;
+			throw new NotSupportedException ("ReplaceMode not supported for UNC copy.");
+		}
 
-            if (ReplaceMode == ReplaceMode.Rename)
-                return FileMode.CreateNew;
-
-            if (ReplaceMode == ReplaceMode.UserAsking)
-                throw new NotImplementedException("UserAsking is not not a valid ReplaceMode.");
-
-            if ((ReplaceMode & ReplaceMode.ReplaceIfNewer) == ReplaceMode.ReplaceIfNewer)
-                return FileMode.Create;
-
-            throw new NotSupportedException("ReplaceMode not supported for UNC copy.");
-        }
-
-        public override void Delete()
-        {
-            _locationInfo.Delete();
-        }
-
-        public override bool Exists()
-        {
-            return _locationInfo.Exists;
-        }
-
-        public override long GetSize()
-        {
-            return _locationInfo.Length;
-        }
-    }
+		private static string GetPathFromLocation (ILocation destinationLocation)
+		{
+			var filePath = destinationLocation.ItemUri.IsAbsoluteUri ? destinationLocation.ItemUri.LocalPath : destinationLocation.ItemUri.ToString ();
+			return filePath;
+		}
+	}
 }

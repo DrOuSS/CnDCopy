@@ -4,30 +4,27 @@ using System.Net;
 
 namespace CnDCopy.Kernel.LocationManagers.Ftp
 {
-    public class FtpPushRequest : PushRequest
-    {
-        public FtpWebRequest Request { get; set; }
-        public Stream OutputStream { get; set; }
+	public class FtpPushRequest : PushRequest
+	{
+		public FtpWebRequest Request { get; set; }
+		public Stream OutputStream { get; set; }
 
-        public override void BufferWriteCallback(byte[] buffer)
-        {
-            OutputStream.Write(buffer, 0, buffer.Length);
-        }
+		public override void BufferWriteCallback (byte[] buffer)
+		{
+			OutputStream.Write (buffer, 0, buffer.Length);
+		}
 
-        public override void OnCopyDone()
-        {
-            try
-            {
-                OutputStream.Close();
-                OutputStream.Dispose();
+		protected override void OnDispose ()
+		{
+			if (Request != null) {
+				var response = (FtpWebResponse)Request.GetResponse ();
+				Trace.TraceInformation ("FTP response status is " + response.StatusDescription);
+			}
 
-                var response = (FtpWebResponse)Request.GetResponse();
-                Trace.TraceInformation("FTP response status is " + response.StatusDescription);
-            }
-            finally 
-            {
-                base.OnCopyDone();
-            }
-        }
-    }
+			if (OutputStream != null) {
+				OutputStream.Close ();
+				OutputStream.Dispose ();
+			}
+		}
+	}
 }
