@@ -62,7 +62,6 @@ namespace FtpWebRequestTests
 			_mre = new ManualResetEventSlim (false);
 			var location = new FtpLocation
                                {
-                                   Credentials = new Credentials{Username = "test"},
                                    ItemUri = new Uri("ftp://127.0.0.1/masseffect3.pdf"),
                                };
 			var locationManager = new FtpManagerTest ();

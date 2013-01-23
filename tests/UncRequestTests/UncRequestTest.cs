@@ -19,7 +19,6 @@ namespace UncRequestTests
 			_mre = new ManualResetEventSlim (false);
 			var location = new UncLocation
             {
-                Credentials = new Credentials { Username = "test" },
                 ItemUri = new Uri(@"c:\test.pdf"),
             };
 			var locationManager = new UncManager (null);

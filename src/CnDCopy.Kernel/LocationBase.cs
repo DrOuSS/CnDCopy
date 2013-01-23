@@ -6,6 +6,5 @@ namespace CnDCopy.Kernel
     {
         public Uri ItemUri { get; set; }
         public bool IsFolder { get; protected set; }
-        public Credentials Credentials { get; set; }
     }
 }
