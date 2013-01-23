@@ -4,7 +4,7 @@
 	{
 		private volatile bool _isDisposed;
 
-		internal LocationManagerBase (Credentials credentials)
+		protected LocationManagerBase (Credentials credentials)
 		{
 			Credentials = credentials;
 		}
