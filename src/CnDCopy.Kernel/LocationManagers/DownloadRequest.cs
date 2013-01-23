@@ -10,12 +10,12 @@ namespace CnDCopy.Kernel.LocationManagers
         public event Action<byte[]> Buffering = bytes => { };
 
 
-        internal void FireCopyDone()
+        public void FireCopyDone()
         {
             CopyDone();
         }
 
-        internal void FireBuffering(byte[] data)
+        public void FireBuffering(byte[] data)
         {
             Buffering(data);
         }

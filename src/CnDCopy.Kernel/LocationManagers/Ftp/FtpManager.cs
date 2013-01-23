@@ -87,7 +87,6 @@ namespace CnDCopy.Kernel.LocationManagers.Ftp
 			var request = CreateRequest (destinationLocation.ItemUri, WebRequestMethods.Ftp.UploadFile, Credentials);
 			var pushRequest = new FtpPushRequest
 			{
-				Request = request,
 				OutputStream = request.GetRequestStream(),
 			};
 			
