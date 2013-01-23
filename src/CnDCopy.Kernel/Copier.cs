@@ -6,17 +6,55 @@ namespace CnDCopy.Kernel
 	public class Copier
 	{
 		public ILocationFactory LocationFactory { get; set; }
-		public Func<ReplaceMode> UserAskHandler { private get; set; } 
+
 
 		public bool Copy (ILocation sourceLocation, ILocation destinationLocation, ReplaceMode replaceMode)
 		{
-			var sourceManager = LocationFactory.GetSourceManager ();
-			var destinationManager = LocationFactory.GetDestinationManager ();
+			if (replaceMode == ReplaceMode.UserAsking)
+				throw new Exception ("Use Copy(ILocation,ILocation,Func<ReplaceMode>) call.");
 
+			return Copy (sourceLocation, destinationLocation, replaceMode, null);
+		}
+
+		public bool Copy (ILocation sourceLocation, ILocation destinationLocation, Func<ReplaceMode> userAskHandler)
+		{
+			if (userAskHandler == null)
+				throw new Exception ("Use Copy(ILocation,ILocation, ReplaceMode) call.");
+
+			return Copy (sourceLocation, destinationLocation, ReplaceMode.UserAsking, userAskHandler);
+		}
+
+		private bool Copy (ILocation sourceLocation, ILocation destinationLocation, ReplaceMode replaceMode, Func<ReplaceMode> userAskHandler = null)
+		{
+			//
+			// Check location manager inheritance contract conflict
+			//
+			var sourceManager = LocationFactory.GetSourceManager ();
+			if (sourceManager is IStreamableLocationManager && sourceManager is IDirectLocationManager)
+				throw new Exception (sourceManager.GetType () + " cannot inherit from IStreamableLocationManager and IDirectLocationManager");
+
+			var destinationManager = LocationFactory.GetDestinationManager ();
+			if (destinationManager is IStreamableLocationManager && destinationManager is IDirectLocationManager)
+				throw new Exception (destinationManager.GetType () + " cannot inherit from IStreamableLocationManager and IDirectLocationManager");
+
+			//
+			// Check destination existance
+			//
 			var canCopy = false;
 			var destinationExists = destinationManager.Exists (destinationLocation);
 			if (!destinationExists)
 				canCopy = true;
+
+			//
+			// Check if destination must be replaced
+			//
+
+			if (destinationExists && replaceMode == ReplaceMode.UserAsking) {
+				if (userAskHandler == null)
+					throw new Exception ("If the ReplaceMode is ReplaceMode.UserAsking, the UserAskHandler delegate shall be set.");
+				
+				replaceMode = userAskHandler ();
+			}
 
 			if (destinationExists && (replaceMode & ReplaceMode.ReplaceIfDifferentSize) == ReplaceMode.ReplaceIfDifferentSize) {
 				var sourceSize = sourceManager.GetSize (sourceLocation);
@@ -38,20 +76,23 @@ namespace CnDCopy.Kernel
 				canCopy = true;
 			}
 
-			if (destinationExists && replaceMode == ReplaceMode.UserAsking) {
-				if (UserAskHandler == null)
-					throw new Exception ("If the ReplaceMode is ReplaceMode.UserAsking, the UserAskHandler delegate shall be set.");
-
-				replaceMode = UserAskHandler ();
-			}
-
 
 			if (canCopy) {
-				using (var pushFile = destinationManager.BeginPush(destinationLocation, replaceMode)) {
-					sourceManager.BeginRetreive (sourceLocation, pushFile.BufferWriteCallback, pushFile.CopyDone);
 
-					pushFile.Done.WaitOne ();
-				}
+				if (sourceManager is IStreamableLocationManager && destinationManager is IStreamableLocationManager) {
+					var streamableSourceManager = (IStreamableLocationManager)sourceManager;
+					var streamableDestinationManager = (IStreamableLocationManager)destinationManager;
+
+					using (var pushFile = streamableDestinationManager.BeginPush(destinationLocation, replaceMode)) {
+						streamableSourceManager.BeginRetreive (sourceLocation, pushFile.BufferWriteCallback, pushFile.CopyDone);
+
+						pushFile.Done.WaitOne ();
+					}
+				} else if (destinationManager is IDirectLocationManager) {
+					var directDestinationManager = (IDirectLocationManager)destinationManager;
+					directDestinationManager.DirectCopy (sourceLocation, destinationLocation, replaceMode);
+				} else
+					throw new NotImplementedException ();
 			}
 
 			return canCopy;

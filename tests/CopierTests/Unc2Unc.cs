@@ -12,19 +12,34 @@ namespace CopierTests
 	{
 		private class LocationFactoryUnc2unc : ILocationFactory
 		{
-			LocationManagerBase _manager = new UncManager (null, ReplaceMode.Ignore);
+			LocationManagerBase _manager = new UncManager (null);
 
 			#region ILocationFactory implementation
-			public LocationManagerBase GetSourceManager ()
+			public ILocationManagerBase GetSourceManager ()
 			{
 				return _manager;
 			}
 
-			public LocationManagerBase GetDestinationManager ()
+			public ILocationManagerBase GetDestinationManager ()
 			{
 				return _manager;
 			}
 			#endregion
+		}
+
+		private class LocationFactoryUnc2uncWithImpersonation : ILocationFactory
+		{
+			#region ILocationFactory implementation
+			public ILocationManagerBase GetSourceManager ()
+			{
+				return new UncManager (new Credentials{Username = @"frmitch-ditd999\test1", Password = "a1b2c3D"});
+			}
+			
+			public ILocationManagerBase GetDestinationManager ()
+			{
+                return new UncManager(new Credentials { Username = @"frmitch-ditd999\test2", Password = "a1b2c3D" });
+			}
+#endregion
 		}
 
 		[Test]
@@ -62,10 +77,10 @@ namespace CopierTests
 
 			var done = copier.Copy (source, destination, ReplaceMode.Ignore);
 
-            Assert.IsTrue(done, "Copy must return true.");
+			Assert.IsTrue (done, "Copy must return true.");
 			if (done) {
-                var path = destination.ItemUri.IsAbsoluteUri ? destination.ItemUri.LocalPath : destination.ItemUri.ToString();
-                Assert.IsTrue(File.Exists(path),
+				var path = destination.ItemUri.IsAbsoluteUri ? destination.ItemUri.LocalPath : destination.ItemUri.ToString ();
+				Assert.IsTrue (File.Exists (path),
                               "File " + path + " shall exist.");
 
 				var sourceSize = locationFactory.GetSourceManager ().GetSize (source);
@@ -75,5 +90,31 @@ namespace CopierTests
 				locationFactory.GetDestinationManager ().Delete (destination);
 			}
 		}
+
+		[Test]
+		public void Local2LocalWithImpersonification ()
+		{
+			var locationFactory = new LocationFactoryUnc2uncWithImpersonation();
+			var copier = new Copier { LocationFactory = locationFactory };
+			
+			var source = new UncLocation { ItemUri = new Uri(@"TestSet\github.jpg", UriKind.Relative) };
+			var destination = new UncLocation { ItemUri = new Uri(@"TestSet\github-copy.jpg", UriKind.Relative) };
+			
+			var done = copier.Copy (source, destination, ReplaceMode.Ignore);
+			
+			Assert.IsTrue (done, "Copy must return true.");
+			if (done) {
+				var path = destination.ItemUri.IsAbsoluteUri ? destination.ItemUri.LocalPath : destination.ItemUri.ToString ();
+				Assert.IsTrue (File.Exists (path),
+				               "File " + path + " shall exist.");
+				
+				var sourceSize = locationFactory.GetSourceManager ().GetSize (source);
+				var destinationSize = locationFactory.GetDestinationManager ().GetSize (destination);
+				Assert.AreEqual (sourceSize, destinationSize, "File length shall be " + sourceSize + " bytes.");
+				
+				locationFactory.GetDestinationManager ().Delete (destination);
+			}
+		}
+
 	}
 }

@@ -22,7 +22,7 @@ namespace UncRequestTests
                 Credentials = new Credentials { Username = "test" },
                 ItemUri = new Uri(@"c:\test.pdf"),
             };
-			var locationManager = new UncManager (null, ReplaceMode.Ignore);
+			var locationManager = new UncManager (null);
 			int bytesRead = 0;
 			using (var sw = new BinaryWriter(File.Create(@"c:\test2.pdf"))) {
 				locationManager.BeginRetreive (location, buffer =>

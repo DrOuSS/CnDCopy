@@ -14,7 +14,7 @@ namespace FtpWebRequestTests
 	{
 		private class FtpManagerTest : FtpManager
 		{
-			public FtpManagerTest () : base(null, ReplaceMode.Ignore)
+			public FtpManagerTest () : base(null)
 			{
 			}
 

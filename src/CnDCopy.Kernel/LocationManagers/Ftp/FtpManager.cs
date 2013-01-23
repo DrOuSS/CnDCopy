@@ -4,14 +4,18 @@ using System.Net;
 
 namespace CnDCopy.Kernel.LocationManagers.Ftp
 {
-	public class FtpManager : LocationManagerBase
+	public class FtpManager : LocationManagerBase, IStreamableLocationManager
 	{
-		public FtpManager (Credentials credentials, ReplaceMode replaceMode) : base(credentials, replaceMode)
+		public FtpManager (Credentials credentials) : base(credentials)
 		{
 			BufferSize = 2048;
 			UseBinary = true;
 			EnableSsl = false;
 			UsePassive = false;
+		}
+
+		protected override void Dispose (bool disposing)
+		{
 		}
 
 		/// <summary>
@@ -32,28 +36,6 @@ namespace CnDCopy.Kernel.LocationManagers.Ftp
 		public bool UsePassive { get; set; }
 
 		#region implemented abstract members of LocationManagerBase
-
-		public override void BeginRetreive (ILocation sourceLocation, Action<byte[]> bufferCallback, Action copyDone)
-		{
-			var ftpRequest = new FtpDownloadRequest (BufferSize);
-			ftpRequest.Buffering += bufferCallback;
-			ftpRequest.CopyDone += copyDone;
-			
-			GetFileSize (sourceLocation, ftpRequest);
-			BeginDownload (sourceLocation, ftpRequest);
-		}
-
-		public override PushRequest BeginPush (ILocation destinationLocation, ReplaceMode replaceMode)
-		{
-			var request = CreateRequest (destinationLocation.ItemUri, WebRequestMethods.Ftp.UploadFile, Credentials);
-			var pushRequest = new FtpPushRequest
-			{
-				Request = request,
-				OutputStream = request.GetRequestStream(),
-			};
-			
-			return pushRequest;
-		}
 
 		public override void Delete (ILocation location)
 		{
@@ -84,6 +66,32 @@ namespace CnDCopy.Kernel.LocationManagers.Ftp
 				return ftpRequest.FileSize;
 			} else
 				throw new NotImplementedException ();
+		}
+
+		#endregion	
+
+		#region IStreamableLocationManager implementation
+
+		public void BeginRetreive (ILocation sourceLocation, Action<byte[]> bufferCallback, Action copyDone)
+		{
+			var ftpRequest = new FtpDownloadRequest (BufferSize);
+			ftpRequest.Buffering += bufferCallback;
+			ftpRequest.CopyDone += copyDone;
+			
+			GetFileSize (sourceLocation, ftpRequest);
+			BeginDownload (sourceLocation, ftpRequest);
+		}
+		
+		public PushRequest BeginPush (ILocation destinationLocation, ReplaceMode replaceMode)
+		{
+			var request = CreateRequest (destinationLocation.ItemUri, WebRequestMethods.Ftp.UploadFile, Credentials);
+			var pushRequest = new FtpPushRequest
+			{
+				Request = request,
+				OutputStream = request.GetRequestStream(),
+			};
+			
+			return pushRequest;
 		}
 
 		#endregion	

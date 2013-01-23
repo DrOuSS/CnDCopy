@@ -60,6 +60,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplaceMode.cs" />
     <Compile Include="LocationManagers\PushRequest.cs" />
+    <Compile Include="LocationManagers\IStreamableLocationManager.cs" />
+    <Compile Include="LocationManagers\ILocationManagerBase.cs" />
+    <Compile Include="LocationManagers\IDirectLocationManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
