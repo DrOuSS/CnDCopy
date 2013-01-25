@@ -30,11 +30,11 @@ namespace CnDCopy.Kernel
 			//
 			// Check location manager inheritance contract conflict
 			//
-			var sourceManager = LocationFactory.GetSourceManager ();
+            var sourceManager = LocationFactory.GetSourceManager(sourceLocation);
 			if (sourceManager is IStreamableLocationManager && sourceManager is IDirectLocationManager)
 				throw new Exception (sourceManager.GetType () + " cannot inherit from IStreamableLocationManager and IDirectLocationManager");
 
-			var destinationManager = LocationFactory.GetDestinationManager ();
+            var destinationManager = LocationFactory.GetDestinationManager(destinationLocation);
 			if (destinationManager is IStreamableLocationManager && destinationManager is IDirectLocationManager)
 				throw new Exception (destinationManager.GetType () + " cannot inherit from IStreamableLocationManager and IDirectLocationManager");
 

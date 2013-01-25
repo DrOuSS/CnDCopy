@@ -5,7 +5,7 @@ namespace CnDCopy.Kernel
 {
 	public interface ILocationFactory
 	{
-		ILocationManagerBase GetSourceManager ();
-		ILocationManagerBase GetDestinationManager ();
+		ILocationManagerBase GetSourceManager (ILocation location);
+        ILocationManagerBase GetDestinationManager(ILocation location);
 	}
 }

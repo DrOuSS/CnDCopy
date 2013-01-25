@@ -15,12 +15,12 @@ namespace CopierTests
 			LocationManagerBase _manager = new UncManager (null);
 
 			#region ILocationFactory implementation
-			public ILocationManagerBase GetSourceManager ()
+            public ILocationManagerBase GetSourceManager(ILocation location)
 			{
 				return _manager;
 			}
 
-			public ILocationManagerBase GetDestinationManager ()
+            public ILocationManagerBase GetDestinationManager(ILocation location)
 			{
 				return _manager;
 			}
@@ -30,12 +30,12 @@ namespace CopierTests
 		private class LocationFactoryUnc2uncWithImpersonation : ILocationFactory
 		{
 			#region ILocationFactory implementation
-			public ILocationManagerBase GetSourceManager ()
+            public ILocationManagerBase GetSourceManager(ILocation location)
 			{
 				return new UncManager (new Credentials{Username = @"frmitch-ditd999\test1", Password = "a1b2c3D"});
 			}
-			
-			public ILocationManagerBase GetDestinationManager ()
+
+            public ILocationManagerBase GetDestinationManager(ILocation location)
 			{
                 return new UncManager(new Credentials { Username = @"frmitch-ditd999\test2", Password = "a1b2c3D" });
 			}
@@ -58,11 +58,11 @@ namespace CopierTests
 				Assert.IsTrue (File.Exists (destination.ItemUri.LocalPath),
                               "File destination.ItemUri.LocalPath shall exist.");
 
-				var sourceSize = locationFactory.GetSourceManager ().GetSize (source);
-				var destinationSize = locationFactory.GetDestinationManager ().GetSize (destination);
+                var sourceSize = locationFactory.GetSourceManager(source).GetSize(source);
+                var destinationSize = locationFactory.GetDestinationManager(destination).GetSize(destination);
 				Assert.AreEqual (sourceSize, destinationSize, "File length shall be " + sourceSize + " bytes.");
 
-				locationFactory.GetDestinationManager ().Delete (destination);
+                locationFactory.GetDestinationManager(destination).Delete(destination);
 			}
 		}
 
@@ -83,11 +83,11 @@ namespace CopierTests
 				Assert.IsTrue (File.Exists (path),
                               "File " + path + " shall exist.");
 
-				var sourceSize = locationFactory.GetSourceManager ().GetSize (source);
-				var destinationSize = locationFactory.GetDestinationManager ().GetSize (destination);
+                var sourceSize = locationFactory.GetSourceManager(source).GetSize(source);
+                var destinationSize = locationFactory.GetDestinationManager(destination).GetSize(destination);
 				Assert.AreEqual (sourceSize, destinationSize, "File length shall be " + sourceSize + " bytes.");
 
-				locationFactory.GetDestinationManager ().Delete (destination);
+                locationFactory.GetDestinationManager(destination).Delete(destination);
 			}
 		}
 
@@ -107,12 +107,12 @@ namespace CopierTests
 				var path = destination.ItemUri.IsAbsoluteUri ? destination.ItemUri.LocalPath : destination.ItemUri.ToString ();
 				Assert.IsTrue (File.Exists (path),
 				               "File " + path + " shall exist.");
-				
-				var sourceSize = locationFactory.GetSourceManager ().GetSize (source);
-				var destinationSize = locationFactory.GetDestinationManager ().GetSize (destination);
+
+                var sourceSize = locationFactory.GetSourceManager(source).GetSize(source);
+                var destinationSize = locationFactory.GetDestinationManager(destination).GetSize(destination);
 				Assert.AreEqual (sourceSize, destinationSize, "File length shall be " + sourceSize + " bytes.");
-				
-				locationFactory.GetDestinationManager ().Delete (destination);
+
+                locationFactory.GetDestinationManager(destination).Delete(destination);
 			}
 		}
 
